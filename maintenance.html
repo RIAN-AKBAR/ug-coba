@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>UTARA GARAGE | MAINTENANCE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; background: #0c0a1a; font-family: 'Inter', 'Space Grotesk', sans-serif; display: flex; align-items: center; justify-content: center; position: relative; overflow-x: hidden; }
+        .ambient-glow { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; }
+        .glow-1 { position: absolute; top: -15%; left: -20%; width: 80vmax; height: 80vmax; background: radial-gradient(circle, rgba(110, 70, 200, 0.35), rgba(30, 20, 70, 0.1), transparent 70%); border-radius: 50%; filter: blur(100px); animation: driftSlow 22s infinite alternate; }
+        .glow-2 { position: absolute; bottom: -20%; right: -15%; width: 85vmax; height: 85vmax; background: radial-gradient(circle, rgba(0, 180, 220, 0.25), rgba(0, 100, 150, 0.08), transparent 75%); border-radius: 50%; filter: blur(110px); animation: driftSlow2 25s infinite alternate; }
+        .glow-3 { position: absolute; top: 40%; left: 25%; width: 60vmax; height: 60vmax; background: radial-gradient(circle, rgba(200, 130, 255, 0.2), rgba(160, 70, 220, 0.08), transparent 70%); border-radius: 50%; filter: blur(90px); animation: driftSlow3 19s infinite alternate; }
+        @keyframes driftSlow { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(6%, 5%) scale(1.2); } }
+        @keyframes driftSlow2 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-5%, -7%) scale(1.25); } }
+        @keyframes driftSlow3 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(4%, -3%) scale(1.15); } }
+        .film-grain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1; }
+        .grid-lines { position: fixed; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 55px 55px; pointer-events: none; z-index: 1; }
+        .lock-card { position: relative; z-index: 30; max-width: 640px; width: 90%; margin: 2rem; padding: 2.6rem 2.2rem; background: rgba(15, 12, 28, 0.6); backdrop-filter: blur(20px); border-radius: 56px; border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 35px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(140, 90, 220, 0.3) inset; text-align: center; animation: cardRise 0.7s ease-out; }
+        @keyframes cardRise { 0% { opacity: 0; transform: scale(0.95) translateY(40px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+        .lock-icon-container { width: 130px; height: 130px; margin: 0 auto 1.2rem; background: linear-gradient(145deg, rgba(100, 70, 180, 0.35), rgba(40, 25, 80, 0.5)); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(210, 170, 255, 0.5); animation: lockPulse 2.8s infinite; }
+        .lock-icon-container i { font-size: 4.2rem; background: linear-gradient(145deg, #f0e6ff, #cdadff, #b27eff); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px rgba(160, 110, 255, 0.7)); }
+        @keyframes lockPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(140, 100, 230, 0.5); } 50% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(140, 100, 230, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(140, 100, 230, 0); } }
+        .status-shield { display: inline-flex; align-items: center; gap: 10px; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(12px); padding: 0.5rem 1.4rem; border-radius: 60px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px; color: #ceb5ff; border: 0.5px solid rgba(160, 120, 250, 0.7); margin-bottom: 1rem; }
+        h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.6rem; font-weight: 700; background: linear-gradient(125deg, #ffffff, #e2c2ff, #c99eff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .desc-modern { color: rgba(225, 210, 255, 0.85); font-weight: 400; font-size: 0.95rem; line-height: 1.65; margin: 1rem 0 1.2rem; }
+        .progress-premium { background: rgba(35, 28, 55, 0.9); border-radius: 100px; height: 6px; margin: 2rem 0 1.8rem; overflow: hidden; }
+        .progress-shine-lock { width: 72%; height: 100%; background: linear-gradient(90deg, #9b5eff, #c57eff, #edb3ff); border-radius: 100px; animation: lockLoader 2.3s ease-in-out infinite; }
+        @keyframes lockLoader { 0% { width: 28%; } 50% { width: 86%; } 100% { width: 28%; } }
+        .feature-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 1.8rem 0; }
+        .chip-lock { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(10px); border: 0.5px solid rgba(150, 110, 230, 0.5); padding: 0.5rem 1.2rem; border-radius: 40px; font-size: 0.72rem; font-weight: 500; color: #cfb5ff; }
+        .social-ring { display: flex; justify-content: center; gap: 1.6rem; margin: 1.8rem 0; }
+        .social-icon-lock { width: 48px; height: 48px; background: rgba(18, 14, 32, 0.7); backdrop-filter: blur(8px); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #e2ccff; border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; text-decoration: none; }
+        .social-icon-lock:hover { background: linear-gradient(135deg, #884eff, #bc7eff); color: white; transform: translateY(-6px) scale(1.07); }
+        .elegant-timer-lock { font-size: 0.75rem; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(12px); display: inline-flex; align-items: center; gap: 10px; padding: 0.5rem 1.4rem; border-radius: 60px; color: #d4bcff; margin-bottom: 1rem; }
+        .btn-lock { background: linear-gradient(102deg, #5f2d9c, #9b4dff); border: none; padding: 1rem 2.2rem; border-radius: 60px; font-weight: 700; font-size: 0.85rem; color: #fff; display: inline-flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.25s; }
+        .btn-lock:hover { background: linear-gradient(102deg, #7842c2, #b56eff); gap: 16px; transform: scale(1.02); }
+        .footer-note { margin-top: 2rem; padding-top: 1rem; display: flex; justify-content: center; gap: 20px; font-size: 0.65rem; color: #8a7bb0; border-top: 1px dashed rgba(150, 110, 230, 0.5); }
+        .global-footer { position: fixed; bottom: 16px; left: 0; width: 100%; text-align: center; font-size: 0.6rem; color: rgba(170, 140, 220, 0.5); z-index: 30; }
+        @media (max-width: 580px) { .lock-card { padding: 1.8rem 1.4rem; } h1 { font-size: 2rem; } .lock-icon-container { width: 95px; height: 95px; } .lock-icon-container i { font-size: 3rem; } }
+        .live-dot { width: 8px; height: 8px; background: #7eff8c; border-radius: 50%; display: inline-block; box-shadow: 0 0 6px #00ff55; animation: blinkDot 1.4s infinite; }
+        @keyframes blinkDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow"><div class="glow-1"></div><div class="glow-2"></div><div class="glow-3"></div></div>
+    <div class="film-grain"></div>
+    <div class="grid-lines"></div>
+
+    <div class="lock-card">
+        <div class="lock-icon-container"><i class="fas fa-tools"></i></div>
+        <div class="status-shield"><i class="fas fa-shield-haltered"></i> MAINTENANCE · LOCK MODE</div>
+        <h1>UTARA GARAGE</h1>
+        <p class="desc-modern"><span style="background: linear-gradient(120deg, #e2baff, #ffffff); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight:700;">Sedang dalam perbaikan & optimalisasi total</span><br>Kami menyempurnakan setiap detail untuk pengalaman terbaik.<br><i class="fas fa-rotate-right"></i> Auto refresh setiap 8 detik.</p>
+        <div class="progress-premium"><div class="progress-shine-lock"></div></div>
+        <div class="feature-chips">
+            <div class="chip-lock"><i class="fas fa-wrench"></i> Repair Suite</div>
+            <div class="chip-lock"><i class="fas fa-lock"></i> Secure Upgrade</div>
+            <div class="chip-lock"><i class="fas fa-gem"></i> Luxury Tuning</div>
+            <div class="chip-lock"><i class="fas fa-bolt"></i> Performance +</div>
+        </div>
+        <div class="social-ring">
+            <a href="https://whatsapp.com/channel/0029VbCEmlcL2ATqlP5QNf2S" class="social-icon-lock" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://tiktok.com/@utara_garage" class="social-icon-lock" target="_blank"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <div class="elegant-timer-lock"><span class="live-dot"></span><span>AUTO REFRESH</span><span id="countdownNumber">8s</span></div>
+        <button class="btn-lock" id="refreshLockBtn"><i class="fas fa-sync-alt"></i> CEK STATUS · SEGERA KEMBALI</button>
+        <div class="footer-note"><i class="fas fa-microchip"></i> MAINTENANCE ACTIVE <span>✧</span> <i class="fas fa-tools"></i> UTARA GARAGE</div>
+    </div>
+    <div class="global-footer"><i class="fas fa-rotate-right"></i> auto refresh setiap 8 detik • esthetic engineering</div>
+
+    <script>
+        // =====================================================
+        // SUPABASE CONFIG - GANTI DENGAN API KEYS ANDA!
+        // =====================================================
+        const SUPABASE_URL = 'https://xxxxxxxxxxxxxxxxxxxx.supabase.co';  // GANTI INI!
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxxxxx';  // GANTI INI!
+        
+        let countdownSec = 8;
+        let refreshInterval = null;
+        
+        async function checkMaintenanceStatus() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.maintenance_mode&select=value`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                const data = await response.json();
+                const isMaintenance = data[0]?.value === 'true';
+                
+                if (!isMaintenance) {
+                    window.location.href = 'index.html';
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.log('Cek maintenance mode gagal:', error);
+                return false;
+            }
+        }
+        
+        function updateUI() {
+            const countdownSpan = document.getElementById('countdownNumber');
+            if (countdownSpan) {
+                countdownSpan.innerText = `${countdownSec}s`;
+            }
+        }
+        
+        function startAutoRefreshTimer() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            
+            countdownSec = 8;
+            updateUI();
+            
+            refreshInterval = setInterval(async () => {
+                if (countdownSec <= 1) {
+                    const redirect = await checkMaintenanceStatus();
+                    if (!redirect) {
+                        countdownSec = 8;
+                        updateUI();
+                    }
+                } else {
+                    countdownSec--;
+                    updateUI();
+                }
+            }, 1000);
+        }
+        
+        async function manualCheck() {
+            countdownSec = 8;
+            updateUI();
+            await checkMaintenanceStatus();
+        }
+        
+        const refreshButton = document.getElementById('refreshLockBtn');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const spinIcon = refreshButton.querySelector('i');
+                if (spinIcon) spinIcon.style.transform = 'rotate(360deg)';
+                setTimeout(() => { if (spinIcon) spinIcon.style.transform = ''; }, 500);
+                manualCheck();
+            });
+        }
+        
+        startAutoRefreshTimer();
+        checkMaintenanceStatus();
+    </script>
+</body>
+</html>
