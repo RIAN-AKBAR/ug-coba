@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UTARA GARAGE | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #0f0718 0%, #1a0f2a 100%); font-family: 'Inter', sans-serif; color: #f0e6ff; min-height: 100vh; }
+        .admin-container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(15, 7, 24, 0.8); backdrop-filter: blur(20px); border-radius: 30px; margin-bottom: 2rem; border: 1px solid rgba(156, 108, 214, 0.3); }
+        .admin-header h1 { font-size: 1.5rem; background: linear-gradient(135deg, #d4c0ff, #b77ee6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .login-form { max-width: 400px; margin: 100px auto; background: rgba(15, 7, 24, 0.8); backdrop-filter: blur(20px); border-radius: 30px; padding: 2rem; border: 1px solid rgba(156, 108, 214, 0.3); }
+        .login-form input { width: 100%; padding: 1rem; margin: 1rem 0; background: rgba(26, 15, 42, 0.6); border: 1px solid rgba(156, 108, 214, 0.4); border-radius: 15px; color: white; font-size: 1rem; }
+        .login-form button { width: 100%; padding: 1rem; background: linear-gradient(135deg, #6b46a0, #4a2a6e); border: none; border-radius: 15px; color: white; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .login-form button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(107, 70, 160, 0.4); }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .tab-btn { padding: 0.8rem 1.5rem; background: rgba(26, 15, 42, 0.6); border: 1px solid rgba(156, 108, 214, 0.3); border-radius: 15px; color: #d4c0ff; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: linear-gradient(135deg, #6b46a0, #4a2a6e); border-color: #b77ee6; color: white; }
+        .tab-content { display: none; background: rgba(15, 7, 24, 0.6); backdrop-filter: blur(10px); border-radius: 30px; padding: 2rem; border: 1px solid rgba(156, 108, 214, 0.3); }
+        .tab-content.active { display: block; }
+        .product-form { background: rgba(26, 15, 42, 0.4); padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; }
+        .product-form input, .product-form select, .product-form textarea { width: 100%; padding: 0.8rem; margin: 0.5rem 0; background: rgba(26, 15, 42, 0.6); border: 1px solid rgba(156, 108, 214, 0.4); border-radius: 10px; color: white; }
+        .products-grid-admin { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem; }
+        .product-card-admin { background: rgba(26, 15, 42, 0.6); border-radius: 20px; padding: 1rem; border: 1px solid rgba(156, 108, 214, 0.3); }
+        .product-card-admin img { width: 100%; height: 150px; object-fit: cover; border-radius: 15px; }
+        .settings-group { margin: 1rem 0; padding: 1rem; background: rgba(26, 15, 42, 0.4); border-radius: 15px; }
+        .settings-group label { display: block; margin-bottom: 0.5rem; color: #b77ee6; font-weight: 500; }
+        .settings-group input, .settings-group select, .settings-group textarea { width: 100%; padding: 0.8rem; background: rgba(26, 15, 42, 0.6); border: 1px solid rgba(156, 108, 214, 0.4); border-radius: 10px; color: white; }
+        .members-table { width: 100%; overflow-x: auto; }
+        .members-table table { width: 100%; border-collapse: collapse; }
+        .members-table th, .members-table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(156, 108, 214, 0.3); }
+        .members-table th { background: rgba(107, 70, 160, 0.3); color: #b77ee6; }
+        .status-badge { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; display: inline-block; }
+        .status-pending { background: #ff9800; color: #000; }
+        .status-approved { background: #4caf50; color: #fff; }
+        .status-rejected { background: #f44336; color: #fff; }
+        .btn-edit, .btn-delete, .btn-approve { padding: 0.3rem 0.8rem; margin: 0 0.2rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        .btn-edit { background: #2196f3; color: white; }
+        .btn-delete { background: #f44336; color: white; }
+        .btn-approve { background: #4caf50; color: white; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #6b46a0, #4a2a6e); padding: 1rem 2rem; border-radius: 15px; z-index: 1000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .logout-btn { background: rgba(244, 67, 54, 0.8); padding: 0.5rem 1rem; border-radius: 10px; cursor: pointer; transition: 0.3s; }
+        .logout-btn:hover { background: #f44336; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="loginContainer"></div>
+        <div id="adminPanel" style="display: none;"></div>
+    </div>
+
+    <script>
+        // =====================================================
+        // SUPABASE CONFIG - GANTI DENGAN API KEYS ANDA!
+        // =====================================================
+        const SUPABASE_URL = 'https://ojucvgwlihlyqsmignvp.supabase.co';  // GANTI INI!
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMzU2MTAsImV4cCI6MjA5NDYxMTYxMH0.39EXfkhVSYov2vKlreI-n_71FMOyQkFYlGuiLyHduLo';  // GANTI INI!
+        const SUPABASE_SERVICE_ROLE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTAzNTYxMCwiZXhwIjoyMDk0NjExNjEwfQ.Pm-PxXmwF8uQm5Ji_RByNcWjNr1Bq3PIeh59_Zo5WGk';  // GANTI INI! (service_role key)
+        
+        let isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+        
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = message;
+            toast.style.background = isError ? 'linear-gradient(135deg, #f44336, #d32f2f)' : 'linear-gradient(135deg, #6b46a0, #4a2a6e)';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        async function supabaseAdminFetch(endpoint, options = {}) {
+            const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+            const headers = {
+                'apikey': SUPABASE_SERVICE_ROLE,
+                'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE}`,
+                'Content-Type': 'application/json'
+            };
+            const response = await fetch(url, { ...options, headers });
+            return response;
+        }
+        
+        function renderLogin() {
+            const container = document.getElementById('loginContainer');
+            container.innerHTML = `
+                <div class="login-form">
+                    <h2 style="text-align:center; margin-bottom:1rem;">🔐 Admin Login</h2>
+                    <input type="text" id="adminUsername" placeholder="Username">
+                    <input type="password" id="adminPassword" placeholder="Password">
+                    <button onclick="handleLogin()">Login</button>
+                </div>
+            `;
+        }
+        
+        function handleLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === 'admin' && password === 'UtaraGarage2026!') {
+                isLoggedIn = true;
+                localStorage.setItem('adminLoggedIn', 'true');
+                showToast('✅ Login berhasil!');
+                renderAdminPanel();
+            } else {
+                showToast('❌ Username atau password salah!', true);
+            }
+        }
+        
+        async function renderAdminPanel() {
+            document.getElementById('loginContainer').style.display = 'none';
+            const panel = document.getElementById('adminPanel');
+            panel.style.display = 'block';
+            panel.innerHTML = `
+                <div class="admin-container">
+                    <div class="admin-header">
+                        <h1><i class="fas fa-crown"></i> UTARA GARAGE Admin Panel</h1>
+                        <div class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+                    </div>
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab('products')">📦 Produk</button>
+                        <button class="tab-btn" onclick="switchTab('settings')">⚙️ Pengaturan</button>
+                        <button class="tab-btn" onclick="switchTab('members')">👥 Member</button>
+                    </div>
+                    <div id="productsTab" class="tab-content active"></div>
+                    <div id="settingsTab" class="tab-content"></div>
+                    <div id="membersTab" class="tab-content"></div>
+                </div>
+            `;
+            await loadProductsTab();
+            await loadSettingsTab();
+            await loadMembersTab();
+        }
+        
+        async function loadProductsTab() {
+            const container = document.getElementById('productsTab');
+            container.innerHTML = `
+                <div class="product-form">
+                    <h3>➕ Tambah Produk Baru</h3>
+                    <input type="text" id="productName" placeholder="Nama Produk">
+                    <input type="text" id="productLink" placeholder="Link Roblox">
+                    <textarea id="productDesc" placeholder="Deskripsi"></textarea>
+                    <input type="text" id="productImage" placeholder="URL Gambar">
+                    <select id="productCategory">
+                        <option value="shirt">Shirt</option>
+                        <option value="jacket">Jacket</option>
+                        <option value="trousers">Trousers</option>
+                        <option value="accessory">Accessory</option>
+                    </select>
+                    <input type="number" id="productStock" placeholder="Stock" value="500">
+                    <button onclick="addProduct()" style="margin-top:1rem; padding:0.8rem; background:linear-gradient(135deg,#6b46a0,#4a2a6e); border:none; border-radius:10px; color:white; cursor:pointer;">Tambah Produk</button>
+                </div>
+                <div id="productsList"></div>
+            `;
+            await refreshProductsList();
+        }
+        
+        async function refreshProductsList() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&order=created_at.desc`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const products = await response.json();
+                const container = document.getElementById('productsList');
+                container.innerHTML = `
+                    <h3>📋 Daftar Produk</h3>
+                    <div class="products-grid-admin">
+                        ${products.map(p => `
+                            <div class="product-card-admin">
+                                <img src="${p.image}" onerror="this.src='https://placehold.co/420x420/2a1a3e/b77ee6?text=UG'">
+                                <h4>${escapeHtml(p.name)}</h4>
+                                <p style="font-size:0.8rem; color:#b89fd9;">${p.category}</p>
+                                <p style="font-size:0.7rem;">Stock: ${p.stock}</p>
+                                <div style="margin-top:0.5rem;">
+                                    <button class="btn-edit" onclick="editProduct(${p.id})">Edit</button>
+                                    <button class="btn-delete" onclick="deleteProduct(${p.id})">Hapus</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        }
+        
+        async function addProduct() {
+            const productData = {
+                name: document.getElementById('productName').value,
+                link: document.getElementById('productLink').value,
+                description: document.getElementById('productDesc').value,
+                image: document.getElementById('productImage').value,
+                category: document.getElementById('productCategory').value,
+                stock: parseInt(document.getElementById('productStock').value),
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+            };
+            
+            try {
+                const response = await supabaseAdminFetch('products', { method: 'POST', body: JSON.stringify(productData) });
+                if (response.ok) {
+                    showToast('✅ Produk berhasil ditambahkan!');
+                    await refreshProductsList();
+                    document.getElementById('productName').value = '';
+                    document.getElementById('productLink').value = '';
+                    document.getElementById('productDesc').value = '';
+                    document.getElementById('productImage').value = '';
+                } else {
+                    showToast('❌ Gagal menambah produk', true);
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        }
+        
+        async function deleteProduct(id) {
+            if (!confirm('Yakin ingin menghapus produk ini?')) return;
+            try {
+                const response = await supabaseAdminFetch(`products?id=eq.${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showToast('✅ Produk berhasil dihapus!');
+                    await refreshProductsList();
+                } else {
+                    showToast('❌ Gagal menghapus produk', true);
+                }
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        }
+        
+        async function editProduct(id) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}&select=*`, {
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+            });
+            const products = await response.json();
+            const product = products[0];
+            const newName = prompt('Nama baru:', product.name);
+            if (newName) {
+                try {
+                    await supabaseAdminFetch(`products?id=eq.${id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ name: newName, updated_at: new Date().toISOString() })
+                    });
+                    showToast('✅ Produk berhasil diupdate!');
+                    await refreshProductsList();
+                } catch (error) {
+                    showToast('Error: ' + error.message, true);
+                }
+            }
+        }
+        
+        async function loadSettingsTab() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/settings?select=*`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const settings = await response.json();
+                const settingsObj = {};
+                settings.forEach(s => { settingsObj[s.key] = s.value; });
+                
+                const container = document.getElementById('settingsTab');
+                container.innerHTML = `
+                    <h3>⚙️ Pengaturan Website</h3>
+                    <div class="settings-group"><label>🔧 Mode Maintenance</label><select id="maintenance_mode"><option value="false" ${settingsObj.maintenance_mode === 'false' ? 'selected' : ''}>Off (Normal)</option><option value="true" ${settingsObj.maintenance_mode === 'true' ? 'selected' : ''}>On (Maintenance)</option></select></div>
+                    <div class="settings-group"><label>👥 Mode Member/Event</label><select id="member_mode"><option value="true" ${settingsObj.member_mode === 'true' ? 'selected' : ''}>Mode Member</option><option value="false" ${settingsObj.member_mode === 'false' ? 'selected' : ''}>Mode Event</option></select></div>
+                    <div class="settings-group"><label>📧 Email Admin</label><input type="email" id="admin_email" value="${settingsObj.admin_email || ''}"></div>
+                    <div class="settings-group"><label>🎂 Usia Minimal Member</label><input type="number" id="min_age" value="${settingsObj.min_age || 15}"></div>
+                    <div class="settings-group"><label>📱 Nomor WhatsApp Event</label><input type="text" id="event_whatsapp" value="${settingsObj.event_whatsapp || ''}"></div>
+                    <div class="settings-group"><label>💬 Pesan Event Default</label><textarea id="event_message" rows="3">${settingsObj.event_message || ''}</textarea></div>
+                    <button onclick="saveSettings()" style="padding:1rem 2rem; background:linear-gradient(135deg,#6b46a0,#4a2a6e); border:none; border-radius:15px; color:white; cursor:pointer;">💾 Simpan Semua Pengaturan</button>
+                `;
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        }
+        
+        async function saveSettings() {
+            const settings = [
+                { key: 'maintenance_mode', value: document.getElementById('maintenance_mode').value },
+                { key: 'member_mode', value: document.getElementById('member_mode').value },
+                { key: 'admin_email', value: document.getElementById('admin_email').value },
+                { key: 'min_age', value: document.getElementById('min_age').value },
+                { key: 'event_whatsapp', value: document.getElementById('event_whatsapp').value },
+                { key: 'event_message', value: document.getElementById('event_message').value }
+            ];
+            
+            try {
+                for (const setting of settings) {
+                    await supabaseAdminFetch(`settings?key=eq.${setting.key}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ value: setting.value, updated_at: new Date().toISOString() })
+                    });
+                }
+                showToast('✅ Semua pengaturan berhasil disimpan!');
+            } catch (error) {
+                showToast('❌ ' + error.message, true);
+            }
+        }
+        
+        async function loadMembersTab() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/members?select=*&order=registered_at.desc`, {
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                });
+                const members = await response.json();
+                const container = document.getElementById('membersTab');
+                container.innerHTML = `
+                    <h3>👥 Daftar Member</h3>
+                    <div class="members-table">
+                        <table>
+                            <thead><tr><th>Nama</th><th>Gender</th><th>Umur</th><th>WhatsApp</th><th>Status</th><th>Tanggal Daftar</th><th>Aksi</th></tr></thead>
+                            <tbody>${members.map(m => `
+                                <tr>
+                                    <td>${escapeHtml(m.name)}</td>
+                                    <td>${m.gender}</td>
+                                    <td>${m.age}</td>
+                                    <td>${m.whatsapp}</td>
+                                    <td><span class="status-badge status-${m.status}">${m.status}</span></td>
+                                    <td>${new Date(m.registered_at).toLocaleDateString('id-ID')}</td>
+                                    <td>${m.status === 'pending' ? `<button class="btn-approve" onclick="updateMemberStatus(${m.id}, 'approved')">Approve</button><button class="btn-delete" onclick="updateMemberStatus(${m.id}, 'rejected')">Reject</button>` : ''}</td>
+                                </tr>
+                            `).join('')}</tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        }
+        
+        async function updateMemberStatus(id, status) {
+            try {
+                await supabaseAdminFetch(`members?id=eq.${id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status, approved_at: status === 'approved' ? new Date().toISOString() : null })
+                });
+                showToast(`✅ Status member diubah menjadi ${status}`);
+                await loadMembersTab();
+            } catch (error) {
+                showToast('Error: ' + error.message, true);
+            }
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}Tab`).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            isLoggedIn = false;
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            renderLogin();
+            showToast('👋 Logout berhasil');
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        if (isLoggedIn) { renderAdminPanel(); } 
+        else { renderLogin(); }
+    </script>
+</body>
+</html>
