@@ -1,42 +1,52 @@
 // =====================================================
-// KONFIGURASI SUPABASE - GANTI DENGAN API KEYS ANDA!
+// KONFIGURASI SUPABASE - UTARA GARAGE
 // =====================================================
 
-// 🔴 WAJIB GANTI: Ambil dari Supabase Dashboard > Project Settings > API
-const SUPABASE_URL = 'https://ojucvgwlihlyqsmignvp.supabase.co';  // GANTI INI!
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMzU2MTAsImV4cCI6MjA5NDYxMTYxMH0.39EXfkhVSYov2vKlreI-n_71FMOyQkFYlGuiLyHduLo';  // GANTI INI!
+const SUPABASE_URL = 'https://ojucvgwlihlyqsmignvp.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMzU2MTAsImV4cCI6MjA5NDYxMTYxMH0.39EXfkhVSYov2vKlreI-n_71FMOyQkFYlGuiLyHduLo';
+const SUPABASE_SERVICE_ROLE = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTAzNTYxMCwiZXhwIjoyMDk0NjExNjEwfQ.Pm-PxXmwF8uQm5Ji_RByNcWjNr1Bq3PIeh59_Zo5WGk';
 
 // =====================================================
-// FUNGSI SUPABASE CLIENT
+// FUNGSI CHECK MAINTENANCE (PENTING!)
 // =====================================================
 
-async function supabaseFetch(endpoint, options = {}) {
-    const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
-    const headers = {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json'
-    };
+async function checkMaintenanceAndRedirect() {
+    console.log('🔍 Checking maintenance mode...');
     
-    const response = await fetch(url, { ...options, headers });
-    return response;
-}
-
-async function supabaseGet(endpoint) {
-    const response = await supabaseFetch(endpoint);
-    return response.json();
-}
-
-async function supabasePost(endpoint, data) {
-    const response = await supabaseFetch(endpoint, {
-        method: 'POST',
-        body: JSON.stringify(data)
-    });
-    return response.json();
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.maintenance_mode&select=value`, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        });
+        
+        const data = await response.json();
+        console.log('📦 Maintenance data:', data);
+        
+        let isMaintenance = false;
+        if (data && data.length > 0) {
+            const value = data[0].value;
+            isMaintenance = (value === 'true' || value === true);
+        }
+        
+        console.log('🟢 Maintenance mode:', isMaintenance);
+        
+        if (isMaintenance) {
+            console.log('⚠️ Redirecting to maintenance.html...');
+            window.location.href = 'maintenance.html';
+            return true;
+        }
+        return false;
+        
+    } catch (error) {
+        console.error('❌ Error checking maintenance:', error);
+        return false;
+    }
 }
 
 // =====================================================
-// FUNGSI UNTUK WEBSITE
+// FUNGSI FETCH SETTINGS
 // =====================================================
 
 async function fetchSettings() {
@@ -55,8 +65,8 @@ async function fetchSettings() {
         });
         
         return {
-            maintenance_mode: result.maintenance_mode === 'true',
-            member_mode: result.member_mode === 'true',
+            maintenance_mode: result.maintenance_mode === 'true' || result.maintenance_mode === true,
+            member_mode: result.member_mode === 'true' || result.member_mode === true,
             admin_email: result.admin_email || 'utaragarageofficial@gmail.com',
             min_age: parseInt(result.min_age) || 15,
             event_whatsapp: result.event_whatsapp || '6281234567890',
@@ -75,6 +85,10 @@ async function fetchSettings() {
     }
 }
 
+// =====================================================
+// FUNGSI FETCH PRODUCTS
+// =====================================================
+
 async function fetchProducts() {
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*&is_active=eq.true&order=created_at.desc`, {
@@ -89,6 +103,10 @@ async function fetchProducts() {
         return [];
     }
 }
+
+// =====================================================
+// FUNGSI REGISTER MEMBER
+// =====================================================
 
 async function registerMember(memberData) {
     try {
@@ -109,12 +127,17 @@ async function registerMember(memberData) {
     }
 }
 
+// =====================================================
 // EXPORT KE WINDOW
+// =====================================================
+
 window.SUPABASE_URL = SUPABASE_URL;
 window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
+window.SUPABASE_SERVICE_ROLE = SUPABASE_SERVICE_ROLE;
+window.checkMaintenanceAndRedirect = checkMaintenanceAndRedirect;
 window.fetchSettings = fetchSettings;
 window.fetchProducts = fetchProducts;
 window.registerMember = registerMember;
-window.supabaseFetch = supabaseFetch;
 
 console.log('✅ Config.js loaded with Supabase');
+console.log('📡 Supabase URL:', SUPABASE_URL);
