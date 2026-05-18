@@ -73,80 +73,52 @@
 
     <script>
         // =====================================================
-        // SUPABASE CONFIG - GANTI DENGAN API KEYS ANDA!
+        // SUPABASE CONFIG
         // =====================================================
-        const SUPABASE_URL = 'https://ojucvgwlihlyqsmignvp.supabase.co';  // GANTI INI!
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMzU2MTAsImV4cCI6MjA5NDYxMTYxMH0.39EXfkhVSYov2vKlreI-n_71FMOyQkFYlGuiLyHduLo';  // GANTI INI!
+        const SUPABASE_URL = 'https://ojucvgwlihlyqsmignvp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdWN2Z3dsaWhseXFzbWlnbnZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwMzU2MTAsImV4cCI6MjA5NDYxMTYxMH0.39EXfkhVSYov2vKlreI-n_71FMOyQkFYlGuiLyHduLo';
         
         let countdownSec = 8;
         let refreshInterval = null;
         
         async function checkMaintenanceStatus() {
+            console.log('🔍 Maintenance page: checking status...');
             try {
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.maintenance_mode&select=value`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
+                    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
                 });
                 const data = await response.json();
-                const isMaintenance = data[0]?.value === 'true';
-                
-                if (!isMaintenance) {
-                    window.location.href = 'index.html';
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                console.log('Cek maintenance mode gagal:', error);
-                return false;
-            }
+                console.log('📦 Maintenance status:', data);
+                let isMaintenance = true;
+                if (data && data.length > 0) { isMaintenance = (data[0].value === 'true' || data[0].value === true); }
+                console.log('🟢 Is maintenance active?', isMaintenance);
+                if (!isMaintenance) { console.log('⚠️ Maintenance OFF - Redirecting to index.html'); window.location.href = 'index.html'; return false; }
+                console.log('✅ Maintenance masih aktif'); return true;
+            } catch (error) { console.error('❌ Error:', error); return true; }
         }
         
-        function updateUI() {
-            const countdownSpan = document.getElementById('countdownNumber');
-            if (countdownSpan) {
-                countdownSpan.innerText = `${countdownSec}s`;
-            }
-        }
+        function updateCountdown() { const span = document.getElementById('countdownNumber'); if(span) span.innerText = `${countdownSec}s`; }
         
         function startAutoRefreshTimer() {
-            if (refreshInterval) clearInterval(refreshInterval);
-            
-            countdownSec = 8;
-            updateUI();
-            
+            if(refreshInterval) clearInterval(refreshInterval);
+            countdownSec = 8; updateCountdown();
             refreshInterval = setInterval(async () => {
-                if (countdownSec <= 1) {
-                    const redirect = await checkMaintenanceStatus();
-                    if (!redirect) {
-                        countdownSec = 8;
-                        updateUI();
-                    }
-                } else {
-                    countdownSec--;
-                    updateUI();
-                }
+                if(countdownSec <= 1) { await checkMaintenanceStatus(); countdownSec = 8; updateCountdown(); }
+                else { countdownSec--; updateCountdown(); }
             }, 1000);
         }
         
         async function manualCheck() {
-            countdownSec = 8;
-            updateUI();
+            countdownSec = 8; updateCountdown();
+            const btn = document.getElementById('refreshLockBtn'); const icon = btn?.querySelector('i');
+            if(icon) { icon.style.transform = 'rotate(360deg)'; setTimeout(() => { if(icon) icon.style.transform = ''; }, 500); }
             await checkMaintenanceStatus();
         }
         
         const refreshButton = document.getElementById('refreshLockBtn');
-        if (refreshButton) {
-            refreshButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                const spinIcon = refreshButton.querySelector('i');
-                if (spinIcon) spinIcon.style.transform = 'rotate(360deg)';
-                setTimeout(() => { if (spinIcon) spinIcon.style.transform = ''; }, 500);
-                manualCheck();
-            });
-        }
+        if(refreshButton) refreshButton.addEventListener('click', (e) => { e.preventDefault(); manualCheck(); });
         
+        console.log('🚀 Maintenance page loaded');
         startAutoRefreshTimer();
         checkMaintenanceStatus();
     </script>
